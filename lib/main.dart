@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:test_udacoding/screens/login_screen.dart';
-import 'package:google_fonts/google_fonts.dart'; // Import google_fonts
+import 'package:google_fonts/google_fonts.dart';
+import 'screens/home_screen.dart';
+import 'screens/register_screen.dart';
+import 'screens/staff_crud_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,9 +17,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'uda coding',
-      home: LoginScreen(),
+      initialRoute: '/login',
+      routes: {
+        '/login': (context) => LoginScreen(),
+        '/register': (context) => RegisterScreen(),
+        '/home': (context) => HomeScreen(),
+        '/staff-crud': (context) => StaffCrudScreen(),
+      },
       theme: ThemeData(
-        // Apply Poppins font globally
         textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
       ),
     );

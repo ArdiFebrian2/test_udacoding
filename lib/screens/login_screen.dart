@@ -1,95 +1,103 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import '../controllers/login_controller.dart';
 
 class LoginScreen extends StatelessWidget {
-  final TextEditingController idLibraryController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-
-  Future<void> login(
-      String idLibrary, String password, BuildContext context) async {
-    final response = await http.post(
-      Uri.parse('http://localhost/beckend/api.php?action=login'),
-      body: {'idLibrary': idLibrary, 'password': password},
-    );
-
-    final data = jsonDecode(response.body);
-    if (data['success']) {
-      Navigator.pushReplacementNamed(context, '/dashboard');
-    } else {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(content: Text(data['message'])),
-      );
-    }
-  }
+  final LoginController controller = LoginController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset('assets/images/udc.jpg', height: 100),
-            SizedBox(height: 20),
-            TextField(
-              controller: idLibraryController,
-              decoration: InputDecoration(
-                hintText: 'idLibrary',
-                hintStyle: TextStyle(color: Colors.grey),
-                border: InputBorder.none,
-                filled: true,
-                fillColor: Colors.grey[200],
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+      backgroundColor: Colors.white,
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Center(
+              child: Column(
+                children: [
+                  const SizedBox(height: 80),
+                  // Logo atau Gambar di bagian atas
+                  Image.asset(
+                    'assets/images/udc.jpg',
+                    height: 80,
+                  ),
+                  const SizedBox(height: 40),
+                  // Judul atau deskripsi
+                  Text(
+                    'Welcome back!',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Log in to continue.',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  // Input ID Library
+                  TextField(
+                    controller: controller.idController,
+                    decoration: InputDecoration(
+                      labelText: 'IDLibrary',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 14),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  // Input Password
+                  TextField(
+                    controller: controller.passwordController,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 14),
+                    ),
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: 30),
+                  // Tombol Login
+                  ElevatedButton(
+                    onPressed: () => controller.login(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.greenAccent,
+                      minimumSize: const Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Log In',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  // Tautan ke Register
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/register');
+                    },
+                    child: const Text(
+                      'Belum punya akun? Daftar',
+                      style: TextStyle(color: Colors.blue),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  // Footer atau teks tambahan
+                ],
               ),
             ),
-            SizedBox(height: 10),
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              decoration: InputDecoration(
-                hintText: 'Password',
-                hintStyle: TextStyle(color: Colors.grey),
-                border: InputBorder.none,
-                filled: true,
-                fillColor: Colors.grey[200],
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-              ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                final idLibrary = idLibraryController.text.trim();
-                final password = passwordController.text.trim();
-                login(idLibrary, password, context);
-              },
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
-                backgroundColor: Colors.green,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5),
-                ),
-              ),
-              child: Text(
-                'Log in',
-                style: TextStyle(fontSize: 16, color: Colors.white),
-              ),
-            ),
-            SizedBox(height: 15),
-            TextButton(
-              onPressed: () => Navigator.pushNamed(context, '/register'),
-              child: Text(
-                'Don\'t have an account? Sign up',
-                style: TextStyle(color: Colors.black),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

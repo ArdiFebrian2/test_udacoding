@@ -1,128 +1,128 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import '../controllers/register_controller.dart';
 
 class RegisterScreen extends StatelessWidget {
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController idLibraryController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-
-  Future<void> register(BuildContext context) async {
-    final response = await http.post(
-      Uri.parse('http://localhost/beckend/api.php?action=register'),
-      body: {
-        'name': nameController.text.trim(),
-        'idLibrary': idLibraryController.text.trim(),
-        'password': passwordController.text.trim(),
-        'email': emailController.text.trim(),
-      },
-    );
-
-    final data = jsonDecode(response.body);
-    if (data['success']) {
-      Navigator.pushReplacementNamed(context, '/');
-    } else {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(content: Text(data['message'])),
-      );
-    }
-  }
+  final RegisterController controller = RegisterController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Register'),
-        elevation: 0,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset('assets/images/udc.jpg', height: 100),
-            SizedBox(height: 20),
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(
-                hintText: 'Full Name',
-                hintStyle: TextStyle(color: Colors.grey),
-                border: InputBorder.none,
-                filled: true,
-                fillColor: Colors.grey[200],
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-              ),
-            ),
-            SizedBox(height: 10),
-            TextField(
-              controller: idLibraryController,
-              decoration: InputDecoration(
-                hintText: 'ID Library',
-                hintStyle: TextStyle(color: Colors.grey),
-                border: InputBorder.none,
-                filled: true,
-                fillColor: Colors.grey[200],
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-              ),
-            ),
-            SizedBox(height: 10),
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              decoration: InputDecoration(
-                hintText: 'Password',
-                hintStyle: TextStyle(color: Colors.grey),
-                border: InputBorder.none,
-                filled: true,
-                fillColor: Colors.grey[200],
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-              ),
-            ),
-            SizedBox(height: 10),
-            TextField(
-              controller: emailController,
-              decoration: InputDecoration(
-                hintText: 'Email',
-                hintStyle: TextStyle(color: Colors.grey),
-                border: InputBorder.none,
-                filled: true,
-                fillColor: Colors.grey[200],
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-              ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                register(context);
-              },
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
-                backgroundColor: Colors.green,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5), // Rounded corners
+      backgroundColor: Colors.white,
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 80),
+                // Logo atau Gambar di bagian atas
+                Image.asset(
+                  'assets/images/udc.jpg',
+                  height: 80,
                 ),
-              ),
-              child: Text(
-                'Register',
-                style: TextStyle(fontSize: 16),
-              ),
+                const SizedBox(height: 40),
+                // Judul halaman
+                Text(
+                  'Create Account',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Sign up to continue.',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 40),
+                // Input Nama
+                TextField(
+                  controller: controller.nameController,
+                  decoration: InputDecoration(
+                    labelText: 'Nama',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 14),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // Input ID Library
+                TextField(
+                  controller: controller.idController,
+                  decoration: InputDecoration(
+                    labelText: 'IDLibrary',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 14),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // Input Email
+                TextField(
+                  controller: controller.emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 14),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // Input Password
+                TextField(
+                  controller: controller.passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 14),
+                  ),
+                  obscureText: true,
+                ),
+                const SizedBox(height: 30),
+                // Tombol Register
+                ElevatedButton(
+                  onPressed: () => controller.register(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.greenAccent,
+                    minimumSize: const Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'Sign Up',
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // Tautan ke halaman Login
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, '/login');
+                  },
+                  child: const Text(
+                    'Sudah punya akun?',
+                    style: TextStyle(color: Colors.blue),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // Footer
+              ],
             ),
-            SizedBox(height: 15),
-            TextButton(
-              onPressed: () => Navigator.pushNamed(context, '/'),
-              child: Text(
-                'Already have an account? Log in',
-                style: TextStyle(color: Colors.black),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
