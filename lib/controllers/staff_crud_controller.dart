@@ -31,6 +31,7 @@ class StaffCrudController {
 
     staffList.add(newStaff);
     await LocalStorage.saveUsers(staffList);
+    clearFields();
   }
 
   Future<void> editStaff(Map<String, dynamic> staff) async {
@@ -61,8 +62,10 @@ class StaffCrudController {
   }
 
   Future<void> deleteStaff(String id) async {
+    // No need to check for null or empty since 'id' is guaranteed to be valid
     staffList.removeWhere((s) => s['id'] == id);
-    await LocalStorage.saveUsers(staffList);
+    await LocalStorage.saveUsers(staffList); // Save changes to local storage
+    print('Staff with id $id has been deleted.');
   }
 
   void clearFields() {
@@ -73,5 +76,6 @@ class StaffCrudController {
     phoneController.clear();
     addressController.clear();
     selectedLevel = 'Admin';
+    print('Fields cleared: ${nameController.text}, ${idController.text}');
   }
 }

@@ -23,34 +23,16 @@ class _StaffCrudScreenState extends State<StaffCrudScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text('Staff Management'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             ElevatedButton.icon(
               onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: Text('Tambah Staff'),
-                    content: SingleChildScrollView(child: _buildStaffForm()),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text('Batal'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () async {
-                          await _controller.saveStaff();
-                          Navigator.pop(context);
-                          await _loadStaffData();
-                        },
-                        child: Text('Simpan'),
-                      ),
-                    ],
-                  ),
-                );
+                _showAddStaffDialog();
               },
               icon: Icon(Icons.add),
               label: Text(
@@ -86,39 +68,28 @@ class _StaffCrudScreenState extends State<StaffCrudScreen> {
                         children: [
                           IconButton(
                             icon: Icon(Icons.edit, color: Colors.blue),
-                            onPressed: () async {
-                              await _controller.editStaff(staff);
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: Text('Edit Staff'),
-                                  content: SingleChildScrollView(
-                                      child: _buildStaffForm()),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: Text('Batal'),
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () async {
-                                        await _controller.updateStaff(staff);
-                                        Navigator.pop(context);
-                                        await _loadStaffData();
-                                      },
-                                      child: Text('Simpan'),
-                                    ),
-                                  ],
-                                ),
-                              );
+                            onPressed: () {
+                              _showEditStaffDialog(staff);
                             },
                           ),
                           IconButton(
                             icon: Icon(Icons.delete, color: Colors.red),
                             onPressed: () async {
-                              await _controller.deleteStaff(staff['id']);
-                              await _loadStaffData();
+                              try {
+                                // Directly call deleteStaff without checking for null or empty
+                                await _controller.deleteStaff(staff['id']);
+
+                                // Update UI after deletion
+                                setState(() {
+                                  _controller
+                                      .loadStaffData(); // Update staffList in UI
+                                });
+                              } catch (e) {
+                                // Handle errors if any
+                                print("Error deleting staff: $e");
+                              }
                             },
-                          ),
+                          )
                         ],
                       ),
                     ),
@@ -128,6 +99,63 @@ class _StaffCrudScreenState extends State<StaffCrudScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showAddStaffDialog() {
+    _controller.clearFields(); // Reset form fields before showing the dialog
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Tambah Staff'),
+        content: SingleChildScrollView(child: _buildStaffForm()),
+        actions: [
+          TextButton(
+            onPressed: () {
+              _controller.clearFields(); // Reset fields when canceling
+              Navigator.pop(context);
+            },
+            child: Text('Batal'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await _controller.saveStaff();
+              Navigator.pop(context);
+              await _loadStaffData();
+            },
+            child: Text('Simpan'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditStaffDialog(Map<String, dynamic> staff) async {
+    await _controller
+        .editStaff(staff); // Pre-fill fields with selected staff data
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Edit Staff'),
+        content: SingleChildScrollView(child: _buildStaffForm()),
+        actions: [
+          TextButton(
+            onPressed: () {
+              _controller.clearFields(); // Reset fields when canceling
+              Navigator.pop(context);
+            },
+            child: Text('Batal'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await _controller.updateStaff(staff);
+              Navigator.pop(context);
+              await _loadStaffData();
+            },
+            child: Text('Simpan'),
+          ),
+        ],
       ),
     );
   }
